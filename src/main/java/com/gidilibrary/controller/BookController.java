@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.gidilibrary.models.Book;
 import com.gidilibrary.payloads.AddBookPayload;
+import com.gidilibrary.payloads.LendBookPayload;
 import com.gidilibrary.payloads.UpdateBookPayload;
 import com.gidilibrary.services.BookService;
 import com.gidilibrary.validators.InputValidator;
@@ -33,10 +34,6 @@ public class BookController {
 		
 	}
 	
-    @GetMapping("/")
-    public String Test() {
-    	return "Welcome home";
-    }
 
 	@PostMapping("/add-book")
 	public ResponseEntity<?> addBook(@Valid @RequestBody AddBookPayload addBookPayload, BindingResult result) {
@@ -49,6 +46,14 @@ public class BookController {
 		
 		return new ResponseEntity<Book>(addedBook, HttpStatus.OK);
 		
+	}
+	
+	@PostMapping("/lend-book")
+	public ResponseEntity<?> lendBook(@Valid @RequestBody LendBookPayload lendBookPayload, BindingResult result){
+		ResponseEntity<?> errorMap = inputValidator.validateFields(result);
+		if(errorMap != null) return errorMap;
+		bookService.lendBook(lendBookPayload);
+		return ResponseEntity.ok("Transaction successful");
 	}
 	
 	

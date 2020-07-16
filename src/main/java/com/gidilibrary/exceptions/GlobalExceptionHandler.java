@@ -25,4 +25,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		BookStatusExceptionResponse exceptionResponse = new BookStatusExceptionResponse(ex.getMessage());
 	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest req){
+		UserNotFoundExceptionResponse exceptionResponse = new UserNotFoundExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
 }

@@ -3,11 +3,11 @@ package com.gidilibrary.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.gidilibrary.models.Book;
+import com.gidilibrary.models.User;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Long>{
+public interface UserRepository extends JpaRepository<User, Long>{
 
-	Book getById(long bookId);
+	User getByRegNo(String userRegNo);
 
 }
