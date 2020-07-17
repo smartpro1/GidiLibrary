@@ -28,10 +28,9 @@ public class User {
 	@JsonIgnore
 	private List<BookTransaction> bookTransactions = new ArrayList<>();
 
-	public User(String fullname, String userRegNo, List<BookTransaction> bookTransactions) {
+	public User(String fullname, String userRegNo) {
 		this.fullname = fullname;
 		this.userRegNo = userRegNo;
-		this.bookTransactions = bookTransactions;
 	}
 	
 	public User() {

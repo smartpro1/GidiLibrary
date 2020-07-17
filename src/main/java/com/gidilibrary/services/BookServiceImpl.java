@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 
 import com.gidilibrary.exceptions.BookNotFoundException;
 import com.gidilibrary.exceptions.BookStatusException;
+import com.gidilibrary.exceptions.UserAlreadyExistException;
 import com.gidilibrary.exceptions.UserNotFoundException;
 import com.gidilibrary.models.Book;
 import com.gidilibrary.models.BookTransaction;
 import com.gidilibrary.models.User;
 import com.gidilibrary.payloads.AddBookPayload;
 import com.gidilibrary.payloads.LendBookPayload;
+import com.gidilibrary.payloads.RegisterUserPayload;
 import com.gidilibrary.repositories.BookRepository;
 import com.gidilibrary.repositories.BookTransactionRepository;
 import com.gidilibrary.repositories.UserRepository;
@@ -102,6 +104,32 @@ public class BookServiceImpl implements BookService {
 		}
 		
 		return foundBook;
+	}
+
+	@Override
+	public List<Book> findAll() {
+		List<Book> allBooks = bookRepo.findAll();
+		return allBooks;
+	}
+
+	@Override
+	public Book findById(long bookId) {
+		Book book = bookRepo.getById(bookId);
+		return book;
+	}
+
+	@Override
+	public User registerUser(@Valid RegisterUserPayload registerUserPayload) {
+		
+		// check if user already exists
+		User user = userRepo.getByRegNo(registerUserPayload.getUserRegNo());
+		if(user != null) {
+			throw new UserAlreadyExistException("User with registration number " + registerUserPayload.getUserRegNo() + "already exists");
+		}
+		
+		User registerUser= new User(registerUserPayload.getFullname(),registerUserPayload.getUserRegNo());
+		userRepo.save(registerUser);
+		return registerUser;
 	}
 
 	

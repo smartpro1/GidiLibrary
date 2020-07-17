@@ -1,5 +1,7 @@
 package com.gidilibrary.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +11,17 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.gidilibrary.models.Book;
+import com.gidilibrary.models.User;
 import com.gidilibrary.payloads.AddBookPayload;
 import com.gidilibrary.payloads.LendBookPayload;
+import com.gidilibrary.payloads.RegisterUserPayload;
 import com.gidilibrary.payloads.UpdateBookPayload;
 import com.gidilibrary.services.BookService;
 import com.gidilibrary.validators.InputValidator;
 
 
 @RestController
-@RequestMapping("/api/v1/gidilibrary")
+@RequestMapping("/api/v1/books")
 @CrossOrigin
 public class BookController {
 	
@@ -35,7 +39,7 @@ public class BookController {
 	}
 	
 
-	@PostMapping("/add-book")
+	@PostMapping
 	public ResponseEntity<?> addBook(@Valid @RequestBody AddBookPayload addBookPayload, BindingResult result) {
 		
 		// validate input fields
@@ -58,8 +62,7 @@ public class BookController {
 	
 	
 	@PutMapping("/{bookId}")
-	public ResponseEntity<?> updateBookById(@PathVariable long bookId, @Valid @RequestBody UpdateBookPayload updateBookPayload, 
-            BindingResult result) {
+	public ResponseEntity<?> updateBookById(@PathVariable long bookId, @Valid @RequestBody UpdateBookPayload updateBookPayload) {
 		
 		Book addedBook = bookService.updateBookById(bookId, updateBookPayload.getBookStatus());
 		
@@ -67,9 +70,39 @@ public class BookController {
 		
 	}
 	
-	 @DeleteMapping(value="/{bookId}")
+	 @DeleteMapping("/{bookId}")
 	    public ResponseEntity<String> deleteBookById(@PathVariable long bookId){
 		 bookService.deleteBookById(bookId);
 		 return ResponseEntity.ok("Book with id " + bookId + " deleted successfully");
+	 }
+	 
+	 @GetMapping
+	 public ResponseEntity<?> getAllBooks(){
+		List<Book> allBooks = bookService.findAll();
+		if(allBooks.size() == 0) {
+			return ResponseEntity.ok("No books found");
+		}
+		return new ResponseEntity<List<Book>>(allBooks, HttpStatus.OK);
+	 }
+	 
+	 @GetMapping("/{bookId}")
+	 public ResponseEntity<?> getBookById(@PathVariable long bookId){
+			Book book = bookService.findById(bookId);
+			if(book == null) {
+				return ResponseEntity.ok("No book found");
+			}
+			return new ResponseEntity<Book>(book, HttpStatus.OK);
+		 }
+	 
+	 
+	 @PostMapping("/register-user")
+	 public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserPayload registerUserPayload, BindingResult result){
+		 
+			// validate input fields
+			ResponseEntity<?> errorMap = inputValidator.validateFields(result);
+			if(errorMap != null) return errorMap;
+			
+		User registeredUser = bookService.registerUser(registerUserPayload);
+		return new ResponseEntity<User>(registeredUser, HttpStatus.OK);
 	 }
 }
