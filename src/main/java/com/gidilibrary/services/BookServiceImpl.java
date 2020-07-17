@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.gidilibrary.exceptions.BookNotFoundException;
 import com.gidilibrary.exceptions.BookStatusException;
+import com.gidilibrary.exceptions.InvalidDateFormatException;
+import com.gidilibrary.exceptions.InvalidRegistrationNumberException;
 import com.gidilibrary.exceptions.UserAlreadyExistException;
 import com.gidilibrary.exceptions.UserNotFoundException;
 import com.gidilibrary.models.Book;
@@ -38,6 +40,7 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public Book addBook(AddBookPayload addBookPayload) {
+		verifyDateFormat(addBookPayload.getDateOfProduction());
 		LocalDate dateOfProduction = LocalDate.parse(addBookPayload.getDateOfProduction());
 		
 		Book newBook = new Book(addBookPayload.getTitle(), addBookPayload.getAuthor(), addBookPayload.getEdition(),
@@ -77,6 +80,7 @@ public class BookServiceImpl implements BookService {
 			throw new BookNotFoundException("Book with id " + lendBookPayload.getBookId() + " is not available");
 		}
 		
+		verifyRegNumber(lendBookPayload.getUserRegNo());
 		User user = userRepo.getByUserRegNo(lendBookPayload.getUserRegNo());
 		if(user == null) {
 			throw new UserNotFoundException("Invalid user - this user has not been registered");
@@ -84,7 +88,12 @@ public class BookServiceImpl implements BookService {
 		
 		getBook.setStatus("borrowed");
 		getBook = bookRepo.save(getBook);
+		verifyDateFormat(lendBookPayload.getExpectedDateOfReturn());
 		LocalDate expectedDateOfReturn = LocalDate.parse(lendBookPayload.getExpectedDateOfReturn());
+		LocalDate todaysDate = LocalDate.now();
+		if(expectedDateOfReturn.isBefore(todaysDate)) {
+			throw new InvalidDateFormatException("expected day of return must not be in the past");
+		}
 		BookTransaction newBookTransaction = new BookTransaction(expectedDateOfReturn, getBook,lendBookPayload.getUserRegNo() , 
 				          lendBookPayload.getNameOfStaffOnDuty());
 		
@@ -95,6 +104,7 @@ public class BookServiceImpl implements BookService {
 		userRepo.save(user);
 		
 	}
+	
 	
 	public Book findBookById(long bookId, String action) {
 		Book foundBook = bookRepo.getById(bookId);
@@ -127,13 +137,24 @@ public class BookServiceImpl implements BookService {
 			throw new UserAlreadyExistException("User with registration number " + registerUserPayload.getUserRegNo() + " already exists");
 		}
 		
+		verifyRegNumber(registerUserPayload.getUserRegNo());
 		User registerUser= new User(registerUserPayload.getFullname(),registerUserPayload.getUserRegNo());
 		
 		User registeredUser = userRepo.save(registerUser);
 		return registeredUser;
 	}
 
+	private void verifyRegNumber(String userRegNo) {
+		if(userRegNo.length() < 3 || !userRegNo.matches("[0-9]+")) {
+			throw new InvalidRegistrationNumberException("registration number must be all digits and atleast 3 digits in length");
+		}
+	}
 	
+	private void verifyDateFormat(String dateString) {
+		if(dateString.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+			throw new InvalidDateFormatException("date should be in yyyy-mm-dd format e.g 2020-07-23");
+		}
+	}
 
 
  

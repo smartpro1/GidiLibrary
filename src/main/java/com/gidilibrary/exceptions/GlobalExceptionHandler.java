@@ -37,4 +37,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		UserAlreadyExistExceptionResponse exceptionResponse = new UserAlreadyExistExceptionResponse(ex.getMessage());
 	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleInvalidRegistrationNumberException(InvalidRegistrationNumberException ex, WebRequest req){
+		InvalidRegistrationNumberExceptionResponse exceptionResponse = new InvalidRegistrationNumberExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleInvalidDateFormatException(InvalidDateFormatException ex, WebRequest req){
+		InvalidDateFormatExceptionResponse exceptionResponse = new InvalidDateFormatExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
 }

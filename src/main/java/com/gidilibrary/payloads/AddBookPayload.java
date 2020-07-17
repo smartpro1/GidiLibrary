@@ -4,6 +4,7 @@ package com.gidilibrary.payloads;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+
 public class AddBookPayload {
 	@NotBlank(message="please enter title of book")
 	@Size(min = 6, max = 60, message="book title must be between 6 - 60 characters long")
@@ -12,7 +13,7 @@ public class AddBookPayload {
 	@Size(min = 6, max = 40, message="name of author must be between 6 - 40 characters long")
 	private String author;
 	@NotBlank(message="please enter edition e.g first edition")
-	@Size(min = 10, max = 30, message="edition must be between 10 - 30 characters long")
+	@Size(min = 10, max = 30, message="edition must be between 10 - 30 characters long e.g first edition")
 	private String edition;
 	private String isbn;
 	@NotBlank(message="please enter date of production using this format: yyyy-mm-dd")

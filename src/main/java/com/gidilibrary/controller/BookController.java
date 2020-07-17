@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class BookController {
 		// validate input fields
 		ResponseEntity<?> errorMap = inputValidator.validateFields(result);
 		if(errorMap != null) return errorMap;
-		
+		System.out.println(result);
 		Book addedBook = bookService.addBook(addBookPayload);
 		
 		return new ResponseEntity<Book>(addedBook, HttpStatus.OK);
