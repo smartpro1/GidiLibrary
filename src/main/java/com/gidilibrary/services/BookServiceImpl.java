@@ -74,10 +74,10 @@ public class BookServiceImpl implements BookService {
 	public void lendBook(LendBookPayload lendBookPayload) {
 		Book getBook = findBookById(lendBookPayload.getBookId(), "lend book");
 		if(!getBook.getStatus().equals("available")) {
-			throw new BookNotFoundException("Book with id " + lendBookPayload.getBookId() + "is not available");
+			throw new BookNotFoundException("Book with id " + lendBookPayload.getBookId() + " is not available");
 		}
 		
-		User user = userRepo.getByRegNo(lendBookPayload.getUserRegNo());
+		User user = userRepo.getByUserRegNo(lendBookPayload.getUserRegNo());
 		if(user == null) {
 			throw new UserNotFoundException("Invalid user - this user has not been registered");
 		}
@@ -122,14 +122,15 @@ public class BookServiceImpl implements BookService {
 	public User registerUser(@Valid RegisterUserPayload registerUserPayload) {
 		
 		// check if user already exists
-		User user = userRepo.getByRegNo(registerUserPayload.getUserRegNo());
+		User user = userRepo.getByUserRegNo(registerUserPayload.getUserRegNo());
 		if(user != null) {
-			throw new UserAlreadyExistException("User with registration number " + registerUserPayload.getUserRegNo() + "already exists");
+			throw new UserAlreadyExistException("User with registration number " + registerUserPayload.getUserRegNo() + " already exists");
 		}
 		
 		User registerUser= new User(registerUserPayload.getFullname(),registerUserPayload.getUserRegNo());
-		userRepo.save(registerUser);
-		return registerUser;
+		
+		User registeredUser = userRepo.save(registerUser);
+		return registeredUser;
 	}
 
 	

@@ -103,6 +103,6 @@ public class BookController {
 			if(errorMap != null) return errorMap;
 			
 		User registeredUser = bookService.registerUser(registerUserPayload);
-		return new ResponseEntity<User>(registeredUser, HttpStatus.OK);
+		return new ResponseEntity<User>(registeredUser, HttpStatus.CREATED);
 	 }
 }

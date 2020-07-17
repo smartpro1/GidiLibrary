@@ -8,6 +8,6 @@ import com.gidilibrary.models.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
 
-	User getByRegNo(String userRegNo);
+	User getByUserRegNo(String userRegNo);
 
 }

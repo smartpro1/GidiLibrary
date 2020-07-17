@@ -19,22 +19,29 @@ public class AddBookPayload {
 	@Size(min = 10, max = 10, message="invalid date format, use: yyyy-mm-dd")
 	private String dateOfProduction;
 	
-	
 	public String getTitle() {
 		return title;
 	}
+	
 	public String getAuthor() {
 		return author;
 	}
+	
 	public String getEdition() {
 		return edition;
 	}
+	
 	public String getIsbn() {
 		return isbn;
 	}
+	
 	public String getDateOfProduction() {
 		return dateOfProduction;
 	}
+	
+	
+	
+	
 	
 	
 }
