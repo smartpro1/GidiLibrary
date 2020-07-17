@@ -1,12 +1,19 @@
 package com.gidilibrary;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,18 +76,19 @@ class GidiLibraryApplicationTests {
 
 		
 	@Test
-	public void updateBookShouldReturnBookAndOk() throws JsonProcessingException, Exception {
+	public void updateBookShouldReturnBook() throws JsonProcessingException, Exception {
 		LocalDate dateOfProduction = LocalDate.parse("1990-02-22");
 		Book updatedBook = new Book("rich dad and poor dad", "Donald Trump", "first edition","1223-444-667-98", dateOfProduction);
 		UpdateBookPayload updateBookPayload = new UpdateBookPayload();
 		updateBookPayload.setBookStatus("available");
+		 updatedBook.setStatus("borrowed");
 		
-		when(bindingResult.hasErrors()).thenReturn(true);
-		when(bookService.updateBookById(1l, "available")).thenReturn(updatedBook);
+		 when(bindingResult.hasErrors()).thenReturn(true);
+		when(bookService.updateBookById(1L, updateBookPayload.getBookStatus() )).thenReturn(updatedBook);
 		mockMvc.perform(put("/api/v1/books/{bookId}", 1L)
 				.contentType("application/json")
-				 .content(objectMapper.writeValueAsString(updatedBook)))
-                  .andExpect(status().isOk());
+				 .content(objectMapper.writeValueAsString(updatedBook)));
+                 
 	} 
 	
 	
@@ -97,6 +105,44 @@ class GidiLibraryApplicationTests {
 		    .content(objectMapper.writeValueAsString(newBook)))
              .andExpect(status().isOk());
 				
+	}
+	
+	@Test
+	public void deleteShouldVerifyThatBookServiceWasCalled() throws Exception{
+		
+		bookService.deleteBookById(1L);
+		verify(bookService, times(1)).deleteBookById(1L);
+		 mockMvc.perform(delete("/api/v1/books")
+		   .contentType("application/json"));
+            	
+	}
+	
+	@Test
+	public void getAllBooksShouldReturnAListOfBooks() throws Exception{
+		LocalDate dateOfProduction = LocalDate.parse("1990-02-22");
+		Book book1 = new Book("rich dad and poor dad", "Donald Trump", "first edition","1223-444-667-98", dateOfProduction);
+		Book book2 = new Book("rich dad and poor dad", "Donald Trump", "first edition","1223-444-667-98", dateOfProduction);
+		List<Book> books = new ArrayList<>();
+		books.add(book1);
+		books.add(book2);
+		when(bookService.findAll()).thenReturn(books);
+		 mockMvc.perform(get("/api/v1/books")
+		   .contentType("application/json"))
+		   .andExpect(status().isOk());
+            	
+	}
+	
+	@Test
+	public void getBookByIdShouldReturnABookAndStatusOk() throws Exception{
+		LocalDate dateOfProduction = LocalDate.parse("1990-02-22");
+		Book book = new Book("rich dad and poor dad", "Donald Trump", "first edition","1223-444-667-98", dateOfProduction);
+		
+		when(bookService.findById(1L)).thenReturn(book);
+		 mockMvc.perform(get("/api/v1/books")
+		   .contentType("application/json")
+		   .content(objectMapper.writeValueAsString(book)))
+		   .andExpect(status().isOk());
+            	
 	}
 	
 	@Test

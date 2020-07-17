@@ -75,9 +75,15 @@ public class BookServiceImpl implements BookService {
 	
 	@Override
 	public void lendBook(LendBookPayload lendBookPayload) {
-		Book getBook = findBookById(lendBookPayload.getBookId(), "lend book");
+		Long bookId;
+		try {
+		bookId = Long.parseLong(lendBookPayload.getBookId());
+		} catch(Exception ex) {
+			throw new InvalidRegistrationNumberException("Book Id can only be digits");
+		}
+		Book getBook = findBookById(bookId, "lend book");
 		if(!getBook.getStatus().equals("available")) {
-			throw new BookNotFoundException("Book with id " + lendBookPayload.getBookId() + " is not available");
+			throw new BookNotFoundException("Book with id " + bookId + " is not available");
 		}
 		
 		verifyRegNumber(lendBookPayload.getUserRegNo());
@@ -151,7 +157,7 @@ public class BookServiceImpl implements BookService {
 	}
 	
 	private void verifyDateFormat(String dateString) {
-		if(dateString.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+		if(!dateString.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
 			throw new InvalidDateFormatException("date should be in yyyy-mm-dd format e.g 2020-07-23");
 		}
 	}
