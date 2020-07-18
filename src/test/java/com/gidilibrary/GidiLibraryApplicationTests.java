@@ -84,7 +84,7 @@ class GidiLibraryApplicationTests {
 		 updatedBook.setStatus("borrowed");
 		
 		 when(bindingResult.hasErrors()).thenReturn(true);
-		when(bookService.updateBookById(1L, updateBookPayload.getBookStatus() )).thenReturn(updatedBook);
+		when(bookService.updateBookById("1", updateBookPayload.getBookStatus() )).thenReturn(updatedBook);
 		mockMvc.perform(put("/api/v1/books/{bookId}", 1L)
 				.contentType("application/json")
 				 .content(objectMapper.writeValueAsString(updatedBook)));
@@ -110,8 +110,8 @@ class GidiLibraryApplicationTests {
 	@Test
 	public void deleteShouldVerifyThatBookServiceWasCalled() throws Exception{
 		
-		bookService.deleteBookById(1L);
-		verify(bookService, times(1)).deleteBookById(1L);
+		bookService.deleteBookById("1");
+		verify(bookService, times(1)).deleteBookById("1");
 		 mockMvc.perform(delete("/api/v1/books")
 		   .contentType("application/json"));
             	
@@ -137,7 +137,7 @@ class GidiLibraryApplicationTests {
 		LocalDate dateOfProduction = LocalDate.parse("1990-02-22");
 		Book book = new Book("rich dad and poor dad", "Donald Trump", "first edition","1223-444-667-98", dateOfProduction);
 		
-		when(bookService.findById(1L)).thenReturn(book);
+		when(bookService.findById("1")).thenReturn(book);
 		 mockMvc.perform(get("/api/v1/books")
 		   .contentType("application/json")
 		   .content(objectMapper.writeValueAsString(book)))

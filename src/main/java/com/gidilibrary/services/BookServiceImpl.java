@@ -7,10 +7,12 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gidilibrary.exceptions.BookNotFoundException;
 import com.gidilibrary.exceptions.BookStatusException;
 import com.gidilibrary.exceptions.InvalidDateFormatException;
+import com.gidilibrary.exceptions.InvalidIdException;
 import com.gidilibrary.exceptions.InvalidRegistrationNumberException;
 import com.gidilibrary.exceptions.UserAlreadyExistException;
 import com.gidilibrary.exceptions.UserNotFoundException;
@@ -25,6 +27,7 @@ import com.gidilibrary.repositories.BookTransactionRepository;
 import com.gidilibrary.repositories.UserRepository;
 
 @Service
+@Transactional
 public class BookServiceImpl implements BookService {
 	
 	private  BookRepository bookRepo;
@@ -42,6 +45,11 @@ public class BookServiceImpl implements BookService {
 	public Book addBook(AddBookPayload addBookPayload) {
 		verifyDateFormat(addBookPayload.getDateOfProduction());
 		LocalDate dateOfProduction = LocalDate.parse(addBookPayload.getDateOfProduction());
+		LocalDate todaysDate = LocalDate.now();
+		
+		if(dateOfProduction.isAfter(todaysDate) || dateOfProduction.isEqual(todaysDate)) {
+			throw new InvalidDateFormatException("date book was published must be in the past.");
+		}
 		
 		Book newBook = new Book(addBookPayload.getTitle(), addBookPayload.getAuthor(), addBookPayload.getEdition(),
 				addBookPayload.getIsbn(), dateOfProduction);
@@ -51,8 +59,9 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public Book updateBookById(long bookId, String bookStatus) {
-		Book getBook  = findBookById(bookId, "Update");
+	public Book updateBookById(String bookId, String bookStatus) {
+		Long sanitisedId = sanitiseBookId(bookId);
+		Book getBook  = findBookById(sanitisedId, "update");
 		if(!bookStatus.equalsIgnoreCase("available") && !bookStatus.equalsIgnoreCase("borrowed")) {
 			throw new BookStatusException("update declined - book status can either be available or borrowed and not " + bookStatus);
 		}
@@ -67,23 +76,25 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public void deleteBookById(long bookId) {
-		findBookById(bookId, "Delete");
-		bookRepo.deleteById(bookId);
+	public void deleteBookById(String bookId) {
+		Long sanitisedId = sanitiseBookId(bookId);
+		findBookById(sanitisedId, "delete");
+		bookRepo.deleteById(sanitisedId);
 		
 	}
 	
 	@Override
 	public void lendBook(LendBookPayload lendBookPayload) {
-		Long bookId;
-		try {
-		bookId = Long.parseLong(lendBookPayload.getBookId());
-		} catch(Exception ex) {
-			throw new InvalidRegistrationNumberException("Book Id can only be digits");
-		}
-		Book getBook = findBookById(bookId, "lend book");
+//		Long bookId;
+//		try {
+//		bookId = Long.parseLong(lendBookPayload.getBookId());
+//		} catch(Exception ex) {
+//			throw new InvalidRegistrationNumberException("Book Id can only be digits");
+//		}
+		Long sanitisedId = sanitiseBookId(lendBookPayload.getBookId());
+		Book getBook = findBookById(sanitisedId, "lend book");
 		if(!getBook.getStatus().equals("available")) {
-			throw new BookNotFoundException("Book with id " + bookId + " is not available");
+			throw new BookNotFoundException("Book with id " + sanitisedId + " is not available");
 		}
 		
 		verifyRegNumber(lendBookPayload.getUserRegNo());
@@ -129,9 +140,23 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public Book findById(long bookId) {
-		Book book = bookRepo.getById(bookId);
+	public Book findById(String bookId) {
+		Long sanitisedId = sanitiseBookId(bookId);
+		Book book = bookRepo.getById(sanitisedId);
 		return book;
+	}
+	
+	private Long sanitiseBookId(String bookId){
+		Long sanitisedId;
+		try {
+			sanitisedId = Long.parseLong(bookId);
+		}
+		
+		catch(Exception ex) {
+			throw new InvalidIdException("book id can only be number");
+		}
+		
+		return sanitisedId;
 	}
 
 	@Override

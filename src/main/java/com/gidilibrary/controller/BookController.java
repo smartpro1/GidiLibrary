@@ -63,7 +63,7 @@ public class BookController {
 	
 	
 	@PutMapping("/{bookId}")
-	public ResponseEntity<?> updateBookById(@PathVariable long bookId, @Valid @RequestBody UpdateBookPayload updateBookPayload) {
+	public ResponseEntity<?> updateBookById(@PathVariable String bookId, @Valid @RequestBody UpdateBookPayload updateBookPayload) {
 		
 		Book addedBook = bookService.updateBookById(bookId, updateBookPayload.getBookStatus());
 		
@@ -72,7 +72,7 @@ public class BookController {
 	}
 	
 	 @DeleteMapping("/{bookId}")
-	    public ResponseEntity<String> deleteBookById(@PathVariable long bookId){
+	    public ResponseEntity<String> deleteBookById(@PathVariable String bookId){
 		 bookService.deleteBookById(bookId);
 		 return new ResponseEntity<String>("Book with id " + bookId + " deleted successfully", HttpStatus.OK);
 	 }
@@ -87,10 +87,10 @@ public class BookController {
 	 }
 	 
 	 @GetMapping("/{bookId}")
-	 public ResponseEntity<?> getBookById(@PathVariable long bookId){
+	 public ResponseEntity<?> getBookById(@PathVariable String bookId){
 			Book book = bookService.findById(bookId);
 			if(book == null) {
-				return ResponseEntity.ok("No book found");
+				return ResponseEntity.ok("Book with id " + bookId + " cannot be found");
 			}
 			return new ResponseEntity<Book>(book, HttpStatus.OK);
 		 }

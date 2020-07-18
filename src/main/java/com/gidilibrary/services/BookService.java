@@ -17,15 +17,15 @@ import com.gidilibrary.payloads.RegisterUserPayload;
 public interface BookService {
 	Book addBook(AddBookPayload addBookPayload);
 
-	void deleteBookById(long bookId);
+	void deleteBookById(String bookId);
 
-	Book updateBookById(long bookId, String bookStatus);
+	Book updateBookById(String bookId, String bookStatus);
 
 	void lendBook(@Valid LendBookPayload lendBookPayload);
 
 	List<Book> findAll();
 
-	Book findById(long bookId);
+	Book findById(String bookId);
 
 	User registerUser(@Valid RegisterUserPayload registerUserPayload);
 }

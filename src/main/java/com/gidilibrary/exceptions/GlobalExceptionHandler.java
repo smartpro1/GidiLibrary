@@ -49,4 +49,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		InvalidDateFormatExceptionResponse exceptionResponse = new InvalidDateFormatExceptionResponse(ex.getMessage());
 	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleInvalidIdException(InvalidIdException ex, WebRequest req){
+		InvalidIdExceptionResponse exceptionResponse = new InvalidIdExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
 }
