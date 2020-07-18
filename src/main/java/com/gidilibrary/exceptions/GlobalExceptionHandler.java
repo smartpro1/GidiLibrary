@@ -55,4 +55,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		InvalidIdExceptionResponse exceptionResponse = new InvalidIdExceptionResponse(ex.getMessage());
 	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleInvalidISBNException(InvalidISBNException ex, WebRequest req){
+		InvalidISBNExceptionResponse exceptionResponse = new InvalidISBNExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
 }

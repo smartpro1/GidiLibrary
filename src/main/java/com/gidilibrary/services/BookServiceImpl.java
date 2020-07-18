@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gidilibrary.exceptions.BookNotFoundException;
 import com.gidilibrary.exceptions.BookStatusException;
 import com.gidilibrary.exceptions.InvalidDateFormatException;
+import com.gidilibrary.exceptions.InvalidISBNException;
 import com.gidilibrary.exceptions.InvalidIdException;
 import com.gidilibrary.exceptions.InvalidRegistrationNumberException;
 import com.gidilibrary.exceptions.UserAlreadyExistException;
@@ -51,11 +52,24 @@ public class BookServiceImpl implements BookService {
 			throw new InvalidDateFormatException("date book was published must be in the past.");
 		}
 		
+		validateIsbn(addBookPayload.getIsbn());
 		Book newBook = new Book(addBookPayload.getTitle(), addBookPayload.getAuthor(), addBookPayload.getEdition(),
 				addBookPayload.getIsbn(), dateOfProduction);
 		
 		Book savedBook = bookRepo.save(newBook);
 		return savedBook;
+	}
+	
+	private void validateIsbn(String isbn) {
+		String isbnNumOnly = isbn.replaceAll("-", "");
+		
+		int isbnNumOnlyLength = isbnNumOnly.length();
+		
+		if(!(isbnNumOnlyLength == 10 || isbnNumOnlyLength == 13) || !isbnNumOnly.matches("[0-9]+")) {
+			throw new InvalidISBNException("isbn can only be 10 or 13 digits in total and use only hyphens as separator"
+					+ " e.g 111-333-553-345-1");
+		}
+	
 	}
 
 	@Override
@@ -85,12 +99,7 @@ public class BookServiceImpl implements BookService {
 	
 	@Override
 	public void lendBook(LendBookPayload lendBookPayload) {
-//		Long bookId;
-//		try {
-//		bookId = Long.parseLong(lendBookPayload.getBookId());
-//		} catch(Exception ex) {
-//			throw new InvalidRegistrationNumberException("Book Id can only be digits");
-//		}
+
 		Long sanitisedId = sanitiseBookId(lendBookPayload.getBookId());
 		Book getBook = findBookById(sanitisedId, "lend book");
 		if(!getBook.getStatus().equals("available")) {

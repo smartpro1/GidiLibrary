@@ -65,9 +65,8 @@ public class BookController {
 	@PutMapping("/{bookId}")
 	public ResponseEntity<?> updateBookById(@PathVariable String bookId, @Valid @RequestBody UpdateBookPayload updateBookPayload) {
 		
-		Book addedBook = bookService.updateBookById(bookId, updateBookPayload.getBookStatus());
-		
-		return new ResponseEntity<Book>(addedBook, HttpStatus.OK);
+		Book updatedBook = bookService.updateBookById(bookId, updateBookPayload.getBookStatus());
+		return new ResponseEntity<Book>(updatedBook, HttpStatus.OK);
 		
 	}
 	
