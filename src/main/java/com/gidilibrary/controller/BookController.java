@@ -22,7 +22,7 @@ import com.gidilibrary.validators.InputValidator;
 
 
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("")
 @CrossOrigin
 public class BookController {
 	
@@ -38,22 +38,25 @@ public class BookController {
 	BookController(){
 		
 	}
-	
 
-	@PostMapping
+	@GetMapping
+	public ResponseEntity<String> health() {
+		return new ResponseEntity<>("Welcome to Gidi Library..😊", HttpStatus.OK);
+	}
+
+	@PostMapping("/books")
 	public ResponseEntity<?> addBook(@Valid @RequestBody AddBookPayload addBookPayload, BindingResult result) {
 		
 		// validate input fields
 		ResponseEntity<?> errorMap = inputValidator.validateFields(result);
 		if(errorMap != null) return errorMap;
-		System.out.println(result);
 		Book addedBook = bookService.addBook(addBookPayload);
 		
 		return new ResponseEntity<Book>(addedBook, HttpStatus.OK);
 		
 	}
 	
-	@PostMapping("/lend-book")
+	@PostMapping("books/lend-book")
 	public ResponseEntity<?> lendBook(@Valid @RequestBody LendBookPayload lendBookPayload, BindingResult result){
 		ResponseEntity<?> errorMap = inputValidator.validateFields(result);
 		if(errorMap != null) return errorMap;
@@ -62,7 +65,7 @@ public class BookController {
 	}
 	
 	
-	@PutMapping("/{bookId}")
+	@PutMapping("books/{bookId}")
 	public ResponseEntity<?> updateBookById(@PathVariable String bookId, @Valid @RequestBody UpdateBookPayload updateBookPayload) {
 		
 		Book updatedBook = bookService.updateBookById(bookId, updateBookPayload.getBookStatus());
@@ -70,13 +73,13 @@ public class BookController {
 		
 	}
 	
-	 @DeleteMapping("/{bookId}")
+	 @DeleteMapping("books/{bookId}")
 	    public ResponseEntity<String> deleteBookById(@PathVariable String bookId){
 		 bookService.deleteBookById(bookId);
 		 return new ResponseEntity<String>("Book with id " + bookId + " deleted successfully", HttpStatus.OK);
 	 }
 	 
-	 @GetMapping
+	 @GetMapping("books")
 	 public ResponseEntity<?> getAllBooks(){
 		List<Book> allBooks = bookService.findAll();
 		if(allBooks.size() == 0) {
@@ -85,7 +88,7 @@ public class BookController {
 		return new ResponseEntity<List<Book>>(allBooks, HttpStatus.OK);
 	 }
 	 
-	 @GetMapping("/{bookId}")
+	 @GetMapping("books/{bookId}")
 	 public ResponseEntity<?> getBookById(@PathVariable String bookId){
 			Book book = bookService.findById(bookId);
 			if(book == null) {
@@ -95,7 +98,7 @@ public class BookController {
 		 }
 	 
 	 
-	 @PostMapping("/register-user")
+	 @PostMapping("books/register-user")
 	 public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserPayload registerUserPayload, BindingResult result){
 		 
 			// validate input fields
