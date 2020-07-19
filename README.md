@@ -37,7 +37,7 @@ Full documentation for interacting with the APIs is available on the endpoints b
 - `/swagger-ui.html`
 - `/v2/api-docs`
 
-H2 Database is available at `http://localhost:5000/h2-console`
+H2 Database is available at `http://localhost:5000/api/v1/h2-console`
 
 You need to login to use the database
 
@@ -46,7 +46,7 @@ An example of the full route to interact with the api is given below:
 `http://localhost:5000/api/v1/books`
 
 To perform most of the api operations, you need to have the role of a LIBRARIAN. 
-Log in as a librarian with the following details:
+Log in as a librarian with the credentials below:
 
 - username: `john`
 - password: `password`
