@@ -5,13 +5,14 @@ GidiLibrary uses an in memory database, this implies that everytime you start or
 you have an empty database to work with and as a matter of fact, you have to populate this one with data
 before you begin to use it.
 
-A user typically goes to borrow a book and the lender issues the book if everything goes well - like 
+A user typically goes to borrow a book and the lender issues the book if some conditions are satisfied - like 
 the availability of the book, the user status(whether the user is registered or not).
 The user needs to be registered by the lender before the user can begin to borrow books.
+The movements of books and details can be tracked in the BOOK_TRANSACTION table which has a one-to-one
+relationship with the BOOK table.
+The application is secured with form-based authentication since it is a basic rest api.
 
-The application is secured with form based authentication since it is a basic rest api.
-
-### Dependencies:
+## Dependencies:
 - Spring web
 - Spring security
 - Spring Data jpa
